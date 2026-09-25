@@ -18,14 +18,18 @@ Python: 3.10+
 """
 
 import logging
+import os
+import warnings
 from pathlib import Path
 
+from google import genai
 import pandas as pd
 import plotly.colors
 import plotly.express as px
 import sqlalchemy
 import sqlalchemy.exc
 import streamlit as st
+from dotenv import load_dotenv
 from sqlalchemy.engine import Engine
 
 # ---------------------------------------------------------------------------
@@ -44,35 +48,93 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-        /* Reduce default main block whitespace */
+        /* === LAYOUT === */
         .block-container {
             padding-top: 1.5rem;
             padding-bottom: 1rem;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
         }
 
-        /* KPI metric card styling */
-        .stMetric {
-            background-color: #f0f2f6;
+        /* === HIDE STREAMLIT CHROME === */
+        #MainMenu {
+            visibility: hidden;
+            height: 0px;
+        }
+        footer {
+            visibility: hidden;
+            height: 0px;
+        }
+        footer::after {
+            content: "";
+            visibility: hidden;
+            display: block;
+            height: 0px;
+        }
+        [data-testid="stToolbar"] {
+            display: none;
+        }
+
+        /* === KPI METRIC CARDS — THEME-SAFE === */
+        /* Uses currentColor and transparent backgrounds to respect
+           both light and dark Streamlit themes natively. */
+        [data-testid="stMetric"] {
             border-radius: 10px;
-            padding: 15px;
+            padding: 16px 20px;
             border-left: 4px solid #4A90D9;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        [data-testid="stMetric"]:hover {
+            transform: translateY(-2px);
+        }
+        [data-testid="stMetric"] > div:first-child {
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        [data-testid="stMetricValue"] {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        [data-testid="stMetricDelta"] {
+            font-size: 0.76rem;
+            font-weight: 500;
+            margin-top: 4px;
         }
 
-        /* Sidebar header font */
-        [data-testid="stSidebar"] h1 {
-            font-size: 1.2rem;
+        /* === SIDEBAR — THEME-SAFE === */
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3 {
             color: #4A90D9;
+            font-weight: 700;
+        }
+        [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] {
+            background-color: #4A90D9;
+            color: white;
+            border-radius: 6px;
         }
 
-        /* Subtle shadow on all Plotly chart containers */
+        /* === CHART CONTAINERS — THEME-SAFE === */
         [data-testid="stPlotlyChart"] {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 6px;
+        }
+
+        /* === DIVIDERS === */
+        hr {
+            border: none;
+            border-top: 1px solid rgba(128, 128, 128, 0.2);
+            margin: 0.5rem 0;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 
 # ---------------------------------------------------------------------------
 # Module-level constants
@@ -425,6 +487,205 @@ def render_kpi_row(df: pd.DataFrame, df_full: pd.DataFrame) -> None:
 
 
 # ---------------------------------------------------------------------------
+# SECTION 5b – AI Executive Summary (Gemini Integration)
+# ---------------------------------------------------------------------------
+
+
+def generate_ai_summary(
+    df: pd.DataFrame,
+    api_key: str,
+) -> str | None:
+    """Generate a strategic AI executive summary using the Gemini API.
+
+    Aggregates key KPIs from the filtered DataFrame, constructs a
+    structured analytical prompt, and queries the Gemini 1.5 Flash
+    model to produce a consulting-grade narrative summary.
+
+    Args:
+        df: The filtered Pandas DataFrame representing the current
+            dashboard view (post sidebar filter application).
+        api_key: The Gemini API key loaded from the environment.
+
+    Returns:
+        A string containing the AI-generated executive summary, or
+        None if the API call fails or the key is absent.
+
+    Raises:
+        Does not raise. All exceptions are caught and logged internally.
+        The return value of None signals failure to the caller.
+    """
+    if not api_key:
+        logging.warning("generate_ai_summary called with no API key present.")
+        return None
+
+    # --- Aggregate KPIs from filtered data ---
+    total_sales: float = df["sales"].sum()
+    total_profit: float = df["profit"].sum()
+    profit_margin: float = (
+        (total_profit / total_sales * 100) if total_sales > 0 else 0.0
+    )
+    total_orders: int = df["order_id"].nunique()
+    avg_order_value: float = (
+        total_sales / total_orders if total_orders > 0 else 0.0
+    )
+
+    top_categories: pd.DataFrame = (
+        df.groupby("category")["profit"]
+        .sum()
+        .reset_index()
+        .rename(columns={"profit": "total_profit"})
+        .sort_values("total_profit", ascending=False)
+    )
+
+    top_subcategories: pd.DataFrame = (
+        df.groupby("sub_category")["profit"]
+        .sum()
+        .reset_index()
+        .rename(columns={"profit": "total_profit"})
+        .sort_values("total_profit", ascending=False)
+        .head(3)
+    )
+
+    worst_subcategory: str = (
+        df.groupby("sub_category")["profit"]
+        .sum()
+        .idxmin()
+    )
+
+    top_region: str = (
+        df.groupby("region")["sales"].sum().idxmax()
+    )
+
+    # --- Construct the analytical data payload ---
+    data_payload: str = f"""
+CURRENT DASHBOARD FILTER SNAPSHOT:
+- Total Revenue: ${total_sales:,.2f}
+- Total Profit: ${total_profit:,.2f}
+- Profit Margin: {profit_margin:.2f}%
+- Unique Orders: {total_orders:,}
+- Average Order Value: ${avg_order_value:,.2f}
+- Top Performing Region (by Sales): {top_region}
+- Category Profit Breakdown:
+{top_categories.to_string(index=False)}
+- Top 3 Sub-Categories by Profit:
+{top_subcategories.to_string(index=False)}
+- Lowest Profit Sub-Category: {worst_subcategory}
+"""
+
+    # --- Construct the system + user prompt ---
+    system_instruction: str = (
+        "You are a Senior Retail Strategy Consultant with 15 years of experience "
+        "advising Fortune 500 retail and e-commerce clients. You write executive "
+        "briefings that are precise, data-grounded, and commercially actionable. "
+        "You do not use filler phrases. You do not repeat numbers that are already "
+        "visible in the dashboard. You surface non-obvious patterns and translate "
+        "them into strategic recommendations a business stakeholder can act on today."
+    )
+
+    user_prompt: str = f"""
+You are reviewing a filtered snapshot of a retail analytics dashboard.
+Based solely on the KPI data below, write a structured executive summary.
+
+FORMAT RULES:
+- Write exactly 2 paragraphs.
+- Paragraph 1 (Performance Diagnosis): Assess the overall commercial health.
+  Identify the single most important positive signal and the single most
+  important risk or underperformance in the data. Be specific — reference
+  actual figures.
+- Paragraph 2 (Strategic Recommendations): Provide exactly 2 actionable
+  recommendations tied directly to the data anomalies you identified.
+  Each recommendation must be one sentence, starting with a strong verb.
+
+DATA:
+{data_payload}
+
+Do not use bullet points. Do not add headers. Write in clean, professional
+business prose. The total response must not exceed 180 words.
+"""
+
+    # --- Call Gemini API ---
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model='gemini-3.5-flash',
+            contents=user_prompt,
+            config={'system_instruction': system_instruction}
+        )
+        summary_text: str = response.text.strip()
+        logging.info(
+            "Gemini API call successful. Response length: %d chars.",
+            len(summary_text),
+        )
+        return summary_text
+
+    except Exception as exc:
+        logging.exception("Gemini API call failed: %s", str(exc))
+        return None
+
+
+def render_ai_summary_panel(
+    df: pd.DataFrame,
+    api_key: str,
+) -> None:
+    """Render the AI Executive Summary UI panel in the Streamlit app.
+
+    Displays a trigger button. On click, calls the Gemini API via
+    ``generate_ai_summary()`` and renders the result in a styled
+    callout. Handles all failure states gracefully without crashing
+    the app.
+
+    Args:
+        df: The filtered Pandas DataFrame for the current dashboard view.
+        api_key: The Gemini API key string (may be empty).
+
+    Returns:
+        None
+    """
+    st.markdown("### 📊 Automated Strategic Analysis")
+
+    if not api_key:
+        st.warning(
+            "⚠️ **API key not found.** "
+            "Add `GEMINI_API_KEY=your_key_here` to a `.env` file "
+            "in the project root to enable automated insights.",
+            icon="🔑",
+        )
+        return
+
+    button_clicked: bool = st.button(
+        label="✨ Generate Strategic Insights",
+        type="primary",
+        width="stretch",
+        help=(
+            "Generates a 2-paragraph strategic "
+            "analysis of the currently filtered dashboard data."
+        ),
+    )
+
+    if button_clicked:
+        with st.spinner("🔍 Analyzing current data snapshot..."):
+            summary: str | None = generate_ai_summary(df, api_key)
+
+        if summary:
+            st.success(
+                f"**📋 Executive Summary**"
+                f"\n\n{summary}",
+                icon="✅",
+            )
+            st.caption(
+                "⚠️ Automated analysis is based on current dashboard filters. "
+                "Validate figures against raw data."
+            )
+        else:
+            st.warning(
+                "⚠️ The automated summary could not be generated at this time. "
+                "Check your API key validity and network connection, "
+                "then try again. Dashboard data is unaffected.",
+                icon="🚨",
+            )
+
+
+# ---------------------------------------------------------------------------
 # SECTION 6 – Sales Trend Over Time (Line Chart)
 # ---------------------------------------------------------------------------
 
@@ -473,6 +734,8 @@ def render_sales_trend(df: pd.DataFrame) -> None:
         yaxis_tickprefix="$",
         yaxis_tickformat=",.0f",
         showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
 
     fig.update_traces(
@@ -480,7 +743,7 @@ def render_sales_trend(df: pd.DataFrame) -> None:
         line_shape="spline",
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 
 # ---------------------------------------------------------------------------
@@ -534,9 +797,11 @@ def render_profit_by_region(df: pd.DataFrame) -> None:
         yaxis_title="Profit ($)",
         yaxis_tickprefix="$",
         yaxis_tickformat=",.0f",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 
 # ---------------------------------------------------------------------------
@@ -589,9 +854,11 @@ def render_category_donut(df: pd.DataFrame) -> None:
     fig.update_layout(
         showlegend=True,
         legend=dict(orientation="v", yanchor="middle", y=0.5),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 
 # ---------------------------------------------------------------------------
@@ -640,7 +907,7 @@ def render_data_explorer(df: pd.DataFrame) -> None:
 
         st.dataframe(
             display_df,
-            use_container_width=True,
+            width="stretch",
             height=300,
         )
 
@@ -683,6 +950,12 @@ def main() -> None:
         format="%(asctime)s — %(levelname)s — %(message)s",
     )
     logging.info("RetailLens application starting.")
+    load_dotenv()
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    logging.info(
+        "Environment loaded. Gemini API key present: %s",
+        bool(GEMINI_API_KEY),
+    )
 
     # ----------------------------------------------------------------
     # Page header
@@ -709,9 +982,16 @@ def main() -> None:
         # Step 4: Apply filters to get the working subset
         df_filtered: pd.DataFrame = apply_filters(df_full, filters)
 
-        # Step 5: KPI row
+        # Step 5: KPI row — border=True uses Streamlit's native theme-adaptive card
         st.markdown("---")
-        render_kpi_row(df_filtered, df_full)
+        with st.container(border=True):
+            render_kpi_row(df_filtered, df_full)
+
+        st.markdown("---")
+
+        # Step 5b: AI Executive Summary panel
+        with st.container():
+            render_ai_summary_panel(df_filtered, GEMINI_API_KEY)
 
         # Step 6: Two-column chart row — Sales Trend + Donut
         st.markdown("---")
