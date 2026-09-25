@@ -22,3 +22,22 @@ RetailLens is an end-to-end Business Intelligence (BI) platform designed to inge
    ```bash
    git clone [https://github.com/YourUsername/RetailLens-Analytics.git](https://github.com/YourUsername/RetailLens-Analytics.git)
    cd RetailLens-Analytics
+
+
+Create and activate a virtual environment (Python 3.12 recommended):
+
+Bash
+py -3.12 -m venv venv
+.\venv\Scripts\activate
+Install dependencies:
+
+Bash
+pip install -r requirements.txt
+Configure environment variables:
+Create a .env file in the root directory and add your API keys (if applicable for the analytics engine).
+
+Build the database and launch the platform:
+
+Bash
+python src/ingest_data.py
+streamlit run src/app.py
