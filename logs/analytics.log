@@ -1,0 +1,26 @@
+2026-09-24 22:46:45 | INFO     | main | ============================================================
+2026-09-24 22:46:45 | INFO     | main |   RetailLens SQL Analytics – START
+2026-09-24 22:46:45 | INFO     | main |   Database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 22:46:45 | INFO     | main | ============================================================
+2026-09-24 23:26:17 | INFO     | main | ============================================================
+2026-09-24 23:26:17 | INFO     | main |   RetailLens SQL Analytics – START
+2026-09-24 23:26:17 | INFO     | main |   Database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:26:17 | INFO     | main | ============================================================
+2026-09-24 23:38:00 | INFO     | main | ============================================================
+2026-09-24 23:38:00 | INFO     | main |   RetailLens SQL Analytics – START
+2026-09-24 23:38:00 | INFO     | main |   Database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:38:00 | INFO     | main | ============================================================
+2026-09-24 23:38:00 | INFO     | get_db_connection | Creating SQLAlchemy engine: sqlite:///V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:38:00 | INFO     | get_db_connection | Engine created successfully for database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:38:00 | INFO     | query_regional_sales_and_margin | Executing Query 1: Regional Sales & Profit Margin
+2026-09-24 23:38:00 | INFO     | query_regional_sales_and_margin | Query 1 returned 4 rows.
+2026-09-24 23:38:00 | INFO     | query_top5_profitable_subcategories | Executing Query 2: Top 5 Profitable Sub-Categories
+2026-09-24 23:38:00 | INFO     | query_top5_profitable_subcategories | Query 2 returned 5 rows.
+2026-09-24 23:38:00 | INFO     | query_yoy_sales_growth | Executing Query 3: YoY Sales Growth (CTE + LAG window function)
+2026-09-24 23:38:00 | INFO     | query_yoy_sales_growth | Query 3 returned 4 rows.
+2026-09-24 23:38:00 | INFO     | query_customer_segment_analysis | Executing Query 4: Customer Segment Analysis (two-level CTE aggregation)
+2026-09-24 23:38:00 | INFO     | query_customer_segment_analysis | Query 4 returned 3 rows.
+2026-09-24 23:38:00 | INFO     | main | ============================================================
+2026-09-24 23:38:00 | INFO     | main |   RetailLens SQL Analytics – ALL QUERIES COMPLETE
+2026-09-24 23:38:00 | INFO     | main | ============================================================
+2026-09-24 23:38:00 | INFO     | main | SQLAlchemy engine disposed cleanly.

@@ -1,0 +1,63 @@
+2026-09-24 22:46:44 | INFO     | main | ============================================================
+2026-09-24 22:46:44 | INFO     | main |   RetailLens ETL Pipeline – START
+2026-09-24 22:46:44 | INFO     | main |   CSV  : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 22:46:44 | INFO     | main |   DB   : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 22:46:44 | INFO     | main |   Table: superstore_sales
+2026-09-24 22:46:44 | INFO     | main | ============================================================
+2026-09-24 23:26:16 | INFO     | main | ============================================================
+2026-09-24 23:26:16 | INFO     | main |   RetailLens ETL Pipeline – START
+2026-09-24 23:26:16 | INFO     | main |   CSV  : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:26:16 | INFO     | main |   DB   : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:26:16 | INFO     | main |   Table: superstore_sales
+2026-09-24 23:26:16 | INFO     | main | ============================================================
+2026-09-24 23:26:16 | INFO     | load_raw_data | Reading CSV: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:37:51 | INFO     | main | ============================================================
+2026-09-24 23:37:51 | INFO     | main |   RetailLens ETL Pipeline – START
+2026-09-24 23:37:51 | INFO     | main |   CSV  : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:37:51 | INFO     | main |   DB   : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:51 | INFO     | main |   Table: superstore_sales
+2026-09-24 23:37:51 | INFO     | main | ============================================================
+2026-09-24 23:37:51 | INFO     | load_raw_data | Reading CSV: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:37:51 | INFO     | load_raw_data | Loaded DataFrame – shape: 9994 rows × 21 columns
+2026-09-24 23:37:51 | INFO     | load_raw_data | Columns detected: ['Row ID', 'Order ID', 'Order Date', 'Ship Date', 'Ship Mode', 'Customer ID', 'Customer Name', 'Segment', 'Country', 'City', 'State', 'Postal Code', 'Region', 'Product ID', 'Category', 'Sub-Category', 'Product Name', 'Sales', 'Quantity', 'Discount', 'Profit']
+2026-09-24 23:37:51 | INFO     | clean_column_names | Column name mapping (original → snake_case): {'Row ID': 'row_id', 'Order ID': 'order_id', 'Order Date': 'order_date', 'Ship Date': 'ship_date', 'Ship Mode': 'ship_mode', 'Customer ID': 'customer_id', 'Customer Name': 'customer_name', 'Segment': 'segment', 'Country': 'country', 'City': 'city', 'State': 'state', 'Postal Code': 'postal_code', 'Region': 'region', 'Product ID': 'product_id', 'Category': 'category', 'Sub-Category': 'sub_category', 'Product Name': 'product_name', 'Sales': 'sales', 'Quantity': 'quantity', 'Discount': 'discount', 'Profit': 'profit'}
+2026-09-24 23:37:51 | INFO     | validate_data | Duplicate rows removed: 0 (remaining: 9994)
+2026-09-24 23:37:51 | INFO     | validate_data | Parsed 'order_date' as datetime64. Coerced nulls: 0
+2026-09-24 23:37:51 | INFO     | validate_data | Parsed 'ship_date' as datetime64. Coerced nulls: 0
+2026-09-24 23:37:51 | INFO     | validate_data | Null value audit: no nulls detected in any column.
+2026-09-24 23:37:51 | INFO     | validate_data | Cast to float64: ['sales', 'profit', 'discount']
+2026-09-24 23:37:51 | INFO     | validate_data | Cast to int64: ['quantity']
+2026-09-24 23:37:51 | INFO     | validate_data | Rows dropped due to null in critical columns ['order_id', 'customer_id', 'sales']: 0 (remaining: 9994)
+2026-09-24 23:37:51 | INFO     | push_to_sqlite | Connecting to SQLite database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:52 | INFO     | push_to_sqlite | Writing 9994 rows to table 'superstore_sales' (chunksize=500, if_exists='replace') …
+2026-09-24 23:37:52 | INFO     | push_to_sqlite | Successfully wrote 9994 rows to 'superstore_sales' in database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:52 | INFO     | push_to_sqlite | SQLAlchemy engine disposed cleanly.
+2026-09-24 23:37:52 | INFO     | main | ============================================================
+2026-09-24 23:37:52 | INFO     | main |   RetailLens ETL Pipeline – COMPLETE
+2026-09-24 23:37:52 | INFO     | main |   Final row count persisted: 9994
+2026-09-24 23:37:52 | INFO     | main | ============================================================
+2026-09-24 23:37:58 | INFO     | main | ============================================================
+2026-09-24 23:37:58 | INFO     | main |   RetailLens ETL Pipeline – START
+2026-09-24 23:37:58 | INFO     | main |   CSV  : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:37:58 | INFO     | main |   DB   : V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:58 | INFO     | main |   Table: superstore_sales
+2026-09-24 23:37:58 | INFO     | main | ============================================================
+2026-09-24 23:37:58 | INFO     | load_raw_data | Reading CSV: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\raw\Superstore.csv
+2026-09-24 23:37:58 | INFO     | load_raw_data | Loaded DataFrame – shape: 9994 rows × 21 columns
+2026-09-24 23:37:58 | INFO     | load_raw_data | Columns detected: ['Row ID', 'Order ID', 'Order Date', 'Ship Date', 'Ship Mode', 'Customer ID', 'Customer Name', 'Segment', 'Country', 'City', 'State', 'Postal Code', 'Region', 'Product ID', 'Category', 'Sub-Category', 'Product Name', 'Sales', 'Quantity', 'Discount', 'Profit']
+2026-09-24 23:37:58 | INFO     | clean_column_names | Column name mapping (original → snake_case): {'Row ID': 'row_id', 'Order ID': 'order_id', 'Order Date': 'order_date', 'Ship Date': 'ship_date', 'Ship Mode': 'ship_mode', 'Customer ID': 'customer_id', 'Customer Name': 'customer_name', 'Segment': 'segment', 'Country': 'country', 'City': 'city', 'State': 'state', 'Postal Code': 'postal_code', 'Region': 'region', 'Product ID': 'product_id', 'Category': 'category', 'Sub-Category': 'sub_category', 'Product Name': 'product_name', 'Sales': 'sales', 'Quantity': 'quantity', 'Discount': 'discount', 'Profit': 'profit'}
+2026-09-24 23:37:58 | INFO     | validate_data | Duplicate rows removed: 0 (remaining: 9994)
+2026-09-24 23:37:58 | INFO     | validate_data | Parsed 'order_date' as datetime64. Coerced nulls: 0
+2026-09-24 23:37:58 | INFO     | validate_data | Parsed 'ship_date' as datetime64. Coerced nulls: 0
+2026-09-24 23:37:58 | INFO     | validate_data | Null value audit: no nulls detected in any column.
+2026-09-24 23:37:58 | INFO     | validate_data | Cast to float64: ['sales', 'profit', 'discount']
+2026-09-24 23:37:58 | INFO     | validate_data | Cast to int64: ['quantity']
+2026-09-24 23:37:58 | INFO     | validate_data | Rows dropped due to null in critical columns ['order_id', 'customer_id', 'sales']: 0 (remaining: 9994)
+2026-09-24 23:37:58 | INFO     | push_to_sqlite | Connecting to SQLite database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:58 | INFO     | push_to_sqlite | Writing 9994 rows to table 'superstore_sales' (chunksize=500, if_exists='replace') …
+2026-09-24 23:37:58 | INFO     | push_to_sqlite | Successfully wrote 9994 rows to 'superstore_sales' in database: V:\Coding\Projects\E-Commerce Analytics Dashboard\data\processed\retaillens.db
+2026-09-24 23:37:58 | INFO     | push_to_sqlite | SQLAlchemy engine disposed cleanly.
+2026-09-24 23:37:58 | INFO     | main | ============================================================
+2026-09-24 23:37:58 | INFO     | main |   RetailLens ETL Pipeline – COMPLETE
+2026-09-24 23:37:58 | INFO     | main |   Final row count persisted: 9994
+2026-09-24 23:37:58 | INFO     | main | ============================================================

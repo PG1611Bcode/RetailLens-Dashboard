@@ -1,0 +1,27 @@
+# =============================================================================
+# RetailLens – Python Dependency File
+# Phase 1: Data Ingestion & SQL Analytics Backend
+# Target Python Version: 3.10+
+# Maintained by: RetailLens Analytics Team
+# =============================================================================
+
+# Core data manipulation
+pandas==2.2.2
+
+# Dashboard & visualisation
+streamlit==1.35.0
+plotly==5.22.0
+matplotlib==3.9.0
+seaborn==0.13.2
+
+# Database connectivity
+sqlalchemy==2.0.30
+
+# Excel I/O support (required by pandas ExcelWriter)
+openpyxl==3.1.2
+
+# Notebook environment
+jupyter==1.0.0
+
+# Environment variable management
+python-dotenv==1.0.1
