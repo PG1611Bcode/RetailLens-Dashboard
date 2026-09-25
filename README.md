@@ -319,4 +319,11 @@ Distributed under the MIT License. See `LICENSE` for details.
 
 *Designed with precision. Engineered for insight.*
 
+<div align="center">
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/pranay-gupta-93a280355)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-22C55E?style=flat-square)](https://github.com/PG1611Bcode)
+
+</div>
+
 </div>
