@@ -35,28 +35,7 @@ two-paragraph consulting brief in seconds.
 
 ---
 
-## 🏗️ System Architecture
 
-┌─────────────────────────────────────────────────────────────────────┐
-│ RetailLens Platform │
-├────────────────────┬──────────────────────┬─────────────────────────┤
-│ INGESTION LAYER │ ANALYTICS LAYER │ PRESENTATION LAYER │
-│ │ │ │
-│ Superstore.csv │ retaillens.db │ Streamlit App │
-│ (Kaggle, 10k+) │ (SQLite) │ (src/app.py) │
-│ │ │ │ │ │ │
-│ ▼ │ ▼ │ ▼ │
-│ ingest_data.py │ sql_analytics.py │ Plotly Charts (5x) │
-│ ┌──────────────┐ │ ┌───────────────┐ │ KPI Metric Cards │
-│ │ load_raw() │ │ │ Regional KPI │ │ Sidebar Filters │
-│ │ clean_cols() │ │ │ Top SubCats │ │ │ │
-│ │ validate() │ │ │ YoY Growth │ │ ▼ │
-│ │ push_sql() │ │ │ Seg. Analysis │ │ Strategic Analysis │
-│ └──────────────┘ │ └───────────────┘ │ Engine (AI-powered) │
-│ │ │ │
-│ pandas · pathlib │ CTEs · LAG() · │ python-dotenv │
-│ sqlalchemy │ Window Functions │ google-generativeai │
-└────────────────────┴──────────────────────┴─────────────────────────┘
 
 
 ---
